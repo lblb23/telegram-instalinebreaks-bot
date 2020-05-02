@@ -82,7 +82,6 @@ def handle_message(update, context):
         # Print to pythonanywhere log
         print(
             username,
-            text,
             time.ctime(int(time.time())),
             result,
             traceback,
