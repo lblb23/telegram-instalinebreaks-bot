@@ -26,7 +26,7 @@ git clone https://github.com/lbulygin/telegram-instalinebreaks-bot
 ```
 3. Add always-on task:
 ```
-python3 /home/{YOUR_USERNAME}/main.py
+python3 /home/{YOUR_USERNAME}/telegram-instalinebreaks-bot/main.py
 ``` 
 
 ## Database of users and mailing
