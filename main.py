@@ -74,10 +74,11 @@ def handle_message(update, context):
         chat_id = update.message.chat.id
         text = update.message.text
 
-        handled_text, result, traceback = handle_text(text)
+        handled_text, metadata_text, result, traceback = handle_text(text, messages)
 
         context.bot.send_message(chat_id=chat_id, text=messages["loading"])
         context.bot.send_message(chat_id=chat_id, text=handled_text)
+        context.bot.send_message(chat_id=chat_id, text=metadata_text)
 
         # Print to pythonanywhere log
         print(

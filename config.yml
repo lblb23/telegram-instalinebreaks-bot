@@ -7,3 +7,4 @@ messages:
   start: "Hello! I can add correct line breaks to your Instagram post. "
   help: "Just send me a text."
   loading: "Your data is loading ..."
+  metadata: "Length: {}/2200 \n Number of hashtags: {}/30"
