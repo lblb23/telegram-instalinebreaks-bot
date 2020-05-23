@@ -9,3 +9,4 @@ messages:
   help: "Just send me a text."
   loading: "Your data is loading ... You have {}/{} messages left"
   metadata: "Length: {}/2200 \n Number of hashtags: {}/30"
+  limit_message: "Unfortunately, your limit is exceeded."
