@@ -13,7 +13,7 @@ from telegram.ext import (
 )
 from tinydb import TinyDB, Query
 
-from utils import handle_text
+from utils import handle_text, send_limit_message
 
 # Mac OS SSL problem
 # import ssl
@@ -23,9 +23,25 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--config_path", default="config.yml", dest="config_path", help="Path to config"
 )
+parser.add_argument(
+    "--db_users",
+    default="db_users.json",
+    dest="db_users_path",
+    help="Path to database of users",
+)
+parser.add_argument(
+    "--db_users_limits",
+    default="db_users_limits.json",
+    dest="db_users_limits_path",
+    help="Path to database of limits",
+)
+
 
 args = parser.parse_args()
 config_path = args.config_path
+db_users_path = args.db_users_path
+db_users_limits_path = args.db_users_limits_path
+
 
 with open(config_path) as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
@@ -40,8 +56,10 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 query = Query()
-db_users = TinyDB("db_users.json")
+db_users = TinyDB(db_users_path)
+db_limits = TinyDB(db_users_limits_path)
 messages = config["messages"]
+messages_limit = config["messages_limit"]
 
 
 def main():
@@ -74,11 +92,19 @@ def handle_message(update, context):
         chat_id = update.message.chat.id
         text = update.message.text
 
-        handled_text, metadata_text, result, traceback = handle_text(text, messages)
+        count_messages = len(db_limits.search(query.user == username))
 
-        context.bot.send_message(chat_id=chat_id, text=messages["loading"])
-        context.bot.send_message(chat_id=chat_id, text=handled_text)
-        context.bot.send_message(chat_id=chat_id, text=metadata_text)
+        if count_messages <= messages_limit:
+            handled_text, metadata_text, result, traceback = handle_text(text, messages)
+
+            context.bot.send_message(
+                chat_id=chat_id,
+                text=messages["loading"].format(count_messages, messages_limit),
+            )
+            context.bot.send_message(chat_id=chat_id, text=handled_text)
+            context.bot.send_message(chat_id=chat_id, text=metadata_text)
+        else:
+            result, traceback = send_limit_message(context, chat_id, messages)
 
         # Print to pythonanywhere log
         print(
@@ -98,6 +124,8 @@ def handle_message(update, context):
         user_exist = db_users.search(query.user == username)
         if len(user_exist) == 0:
             db_users.insert({"user": username, "chat_id": chat_id})
+
+        db_limits.insert({"user": username})
 
 
 if __name__ == "__main__":
