@@ -1,8 +1,6 @@
 # Instagram linebreaks telegram bot
 Telegram bot for adding line breaks to your Instagram captions
 
-[Implementation](https://t.me/linebreaks_bot)
-
 ## Getting Started
 
 1. Create own telegram bot. Manual: https://core.telegram.org/bots
